@@ -1,0 +1,66 @@
+<html>
+<head>
+<title>02_regression_Model.ipynb</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #7a7e85;}
+.s1 { color: #bcbec4;}
+.s2 { color: #cf8e6d;}
+.s3 { color: #bcbec4;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+02_regression_Model.ipynb</font>
+</center></td></tr></table>
+<pre><span class="s0">#%% md 
+</span><span class="s1"># Linear Regression on Cleaned Admissions Data 
+This notebook loads the cleaned admissions dataset, trains a Linear Regression model, evaluates its performance, and saves predictions. 
+</span><span class="s0">#%% 
+</span><span class="s2">import </span><span class="s1">pandas </span><span class="s2">as </span><span class="s1">pd</span>
+<span class="s2">from </span><span class="s1">sklearn</span><span class="s3">.</span><span class="s1">model_selection </span><span class="s2">import </span><span class="s1">train_test_split</span>
+<span class="s2">from </span><span class="s1">sklearn</span><span class="s3">.</span><span class="s1">linear_model </span><span class="s2">import </span><span class="s1">LinearRegression</span>
+<span class="s2">from </span><span class="s1">sklearn</span><span class="s3">.</span><span class="s1">metrics </span><span class="s2">import </span><span class="s1">mean_squared_error</span>
+<span class="s0">#%% 
+# 1. Load cleaned dataset</span>
+<span class="s1">data_path </span><span class="s3">= </span><span class="s4">'../data/admission_data_standardized.csv'</span>
+<span class="s1">df </span><span class="s3">= </span><span class="s1">pd</span><span class="s3">.</span><span class="s1">read_csv</span><span class="s3">(</span><span class="s1">data_path</span><span class="s3">)</span>
+<span class="s1">df</span><span class="s3">.</span><span class="s1">rename</span><span class="s3">(</span><span class="s1">columns</span><span class="s3">={</span><span class="s4">'chance_of_admit'</span><span class="s3">: </span><span class="s4">'Chance_of_Admit'</span><span class="s3">}, </span><span class="s1">inplace</span><span class="s3">=</span><span class="s2">True</span><span class="s3">)</span>
+<span class="s1">df</span><span class="s3">.</span><span class="s1">head</span><span class="s3">()</span>
+<span class="s0">#%% 
+# 2. Prepare features and target</span>
+<span class="s1">X </span><span class="s3">= </span><span class="s1">df</span><span class="s3">.</span><span class="s1">drop</span><span class="s3">(</span><span class="s1">columns</span><span class="s3">=[</span><span class="s4">'Chance_of_Admit'</span><span class="s3">])</span>
+<span class="s1">y </span><span class="s3">= </span><span class="s1">df</span><span class="s3">[</span><span class="s4">'Chance_of_Admit'</span><span class="s3">]</span>
+<span class="s0">#%% 
+# 3. Split into training and test sets (80/20)</span>
+<span class="s1">X_train</span><span class="s3">, </span><span class="s1">X_test</span><span class="s3">, </span><span class="s1">y_train</span><span class="s3">, </span><span class="s1">y_test </span><span class="s3">= </span><span class="s1">train_test_split</span><span class="s3">(</span>
+    <span class="s1">X</span><span class="s3">, </span><span class="s1">y</span><span class="s3">, </span><span class="s1">test_size</span><span class="s3">=</span><span class="s5">0.2</span><span class="s3">, </span><span class="s1">random_state</span><span class="s3">=</span><span class="s5">42</span>
+<span class="s3">)</span>
+<span class="s0">#%% 
+# 4. Train Linear Regression model</span>
+<span class="s1">model </span><span class="s3">= </span><span class="s1">LinearRegression</span><span class="s3">()</span>
+<span class="s1">model</span><span class="s3">.</span><span class="s1">fit</span><span class="s3">(</span><span class="s1">X_train</span><span class="s3">, </span><span class="s1">y_train</span><span class="s3">)</span>
+<span class="s0">#%% 
+# 5. Evaluate performance</span>
+<span class="s1">y_train_pred </span><span class="s3">= </span><span class="s1">model</span><span class="s3">.</span><span class="s1">predict</span><span class="s3">(</span><span class="s1">X_train</span><span class="s3">)</span>
+<span class="s1">y_test_pred </span><span class="s3">= </span><span class="s1">model</span><span class="s3">.</span><span class="s1">predict</span><span class="s3">(</span><span class="s1">X_test</span><span class="s3">)</span>
+<span class="s1">mse_train </span><span class="s3">= </span><span class="s1">mean_squared_error</span><span class="s3">(</span><span class="s1">y_train</span><span class="s3">, </span><span class="s1">y_train_pred</span><span class="s3">)</span>
+<span class="s1">mse_test </span><span class="s3">= </span><span class="s1">mean_squared_error</span><span class="s3">(</span><span class="s1">y_test</span><span class="s3">, </span><span class="s1">y_test_pred</span><span class="s3">)</span>
+<span class="s1">print</span><span class="s3">(</span><span class="s4">f'Training Mean Squared Error: </span><span class="s2">{</span><span class="s1">mse_train</span><span class="s2">:</span><span class="s4">.5f</span><span class="s2">}</span><span class="s4">'</span><span class="s3">)</span>
+<span class="s1">print</span><span class="s3">(</span><span class="s4">f'Test Mean Squared Error:     </span><span class="s2">{</span><span class="s1">mse_test</span><span class="s2">:</span><span class="s4">.5f</span><span class="s2">}</span><span class="s4">'</span><span class="s3">)</span>
+<span class="s0">#%% 
+# 6. Save test predictions to CSV</span>
+<span class="s1">pred_df </span><span class="s3">= </span><span class="s1">pd</span><span class="s3">.</span><span class="s1">DataFrame</span><span class="s3">({</span><span class="s4">'Actual'</span><span class="s3">: </span><span class="s1">y_test</span><span class="s3">.</span><span class="s1">values</span><span class="s3">, </span><span class="s4">'Predicted'</span><span class="s3">: </span><span class="s1">y_test_pred</span><span class="s3">})</span>
+<span class="s1">output_csv </span><span class="s3">= </span><span class="s4">'../results/regression_predictions.csv'</span>
+<span class="s1">pred_df</span><span class="s3">.</span><span class="s1">to_csv</span><span class="s3">(</span><span class="s1">output_csv</span><span class="s3">, </span><span class="s1">index</span><span class="s3">=</span><span class="s2">False</span><span class="s3">)</span>
+<span class="s1">print</span><span class="s3">(</span><span class="s4">f'Saved predictions to </span><span class="s2">{</span><span class="s1">output_csv</span><span class="s2">}</span><span class="s4">'</span><span class="s3">)</span>
+<span class="s0">#%% md 
+</span><span class="s1">## Summary of Results 
+- **Training MSE**: 0.00387   
+- **Test MSE**: 0.00462</span></pre>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<html>
+<head>
+<title>01_eda.ipynb</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #7a7e85;}
+.s1 { color: #bcbec4;}
+.s2 { color: #cf8e6d;}
+.s3 { color: #bcbec4;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+01_eda.ipynb</font>
+</center></td></tr></table>
+<pre><span class="s0">#%% md 
+</span><span class="s1"># Part1. Exploratory Data Analysis 
+</span><span class="s0">#%% 
+# for csv reading</span>
+<span class="s2">import </span><span class="s1">pandas </span><span class="s2">as </span><span class="s1">pd </span>
+
+<span class="s0"># for plotting</span>
+<span class="s2">import </span><span class="s1">matplotlib</span><span class="s3">.</span><span class="s1">pyplot </span><span class="s2">as </span><span class="s1">plt</span>
+<span class="s2">import </span><span class="s1">seaborn </span><span class="s2">as </span><span class="s1">sns</span>
+
+<span class="s0"># for normalization</span>
+<span class="s2">from </span><span class="s1">sklearn</span><span class="s3">.</span><span class="s1">preprocessing </span><span class="s2">import </span><span class="s1">StandardScaler</span>
+
+<span class="s0">#%% 
+#  read and check the data</span>
+<span class="s1">df </span><span class="s3">= </span><span class="s1">pd</span><span class="s3">.</span><span class="s1">read_csv</span><span class="s3">(</span><span class="s4">&quot;../data/College_Admissions.csv&quot;</span><span class="s3">)</span>
+<span class="s1">df</span><span class="s3">.</span><span class="s1">head</span><span class="s3">()      </span>
+<span class="s0">#%% 
+</span><span class="s1">df</span><span class="s3">.</span><span class="s1">info</span><span class="s3">()</span>
+<span class="s0"># this results shows no null values in the dataset</span>
+<span class="s0">#%% 
+# we don't need the index column</span>
+<span class="s1">df </span><span class="s3">= </span><span class="s1">df</span><span class="s3">.</span><span class="s1">drop</span><span class="s3">(</span><span class="s1">columns</span><span class="s3">=[</span><span class="s4">&quot;Serial No.&quot;</span><span class="s3">])</span>
+<span class="s0"># standardize column names</span>
+<span class="s1">df</span><span class="s3">.</span><span class="s1">columns </span><span class="s3">= </span><span class="s1">df</span><span class="s3">.</span><span class="s1">columns</span><span class="s3">.</span><span class="s1">str</span><span class="s3">.</span><span class="s1">strip</span><span class="s3">().</span><span class="s1">str</span><span class="s3">.</span><span class="s1">lower</span><span class="s3">().</span><span class="s1">str</span><span class="s3">.</span><span class="s1">replace</span><span class="s3">(</span><span class="s4">&quot; &quot;</span><span class="s3">, </span><span class="s4">&quot;_&quot;</span><span class="s3">)  </span><span class="s0"># standardize names</span>
+<span class="s0">#%% 
+</span><span class="s1">df</span><span class="s3">.</span><span class="s1">describe</span><span class="s3">() </span>
+<span class="s0">#%% md 
+</span><span class="s1">## distribution of key numerical features in  dataset 
+ 
+1. See features distribution 
+2. Spot Potential Outliers 
+</span><span class="s0">#%% 
+</span><span class="s1">features </span><span class="s3">= </span><span class="s1">df</span><span class="s3">.</span><span class="s1">columns</span><span class="s3">.</span><span class="s1">tolist</span><span class="s3">()</span>
+<span class="s1">print</span><span class="s3">(</span><span class="s1">features</span><span class="s3">)</span>
+<span class="s1">print</span><span class="s3">(</span><span class="s1">len</span><span class="s3">(</span><span class="s1">features</span><span class="s3">))</span>
+<span class="s0">#%% 
+</span><span class="s2">for </span><span class="s1">feature </span><span class="s2">in </span><span class="s1">df</span><span class="s3">.</span><span class="s1">columns</span><span class="s3">:</span>
+    <span class="s1">plt</span><span class="s3">.</span><span class="s1">figure</span><span class="s3">()</span>
+    <span class="s2">if </span><span class="s1">df</span><span class="s3">[</span><span class="s1">feature</span><span class="s3">].</span><span class="s1">nunique</span><span class="s3">() &lt; </span><span class="s5">15</span><span class="s3">:</span>
+        <span class="s0"># for discrete features</span>
+        <span class="s1">sns</span><span class="s3">.</span><span class="s1">countplot</span><span class="s3">(</span><span class="s1">x</span><span class="s3">=</span><span class="s1">feature</span><span class="s3">, </span><span class="s1">data</span><span class="s3">=</span><span class="s1">df</span><span class="s3">)</span>
+    <span class="s2">else</span><span class="s3">:</span>
+        <span class="s0"># for continuous features</span>
+        <span class="s1">sns</span><span class="s3">.</span><span class="s1">histplot</span><span class="s3">(</span><span class="s1">df</span><span class="s3">[</span><span class="s1">feature</span><span class="s3">], </span><span class="s1">kde</span><span class="s3">=</span><span class="s2">True</span><span class="s3">)</span>
+    <span class="s1">plt</span><span class="s3">.</span><span class="s1">title</span><span class="s3">(</span><span class="s4">f&quot;</span><span class="s2">{</span><span class="s1">feature</span><span class="s2">} </span><span class="s4">Distribution&quot;</span><span class="s3">)</span>
+    <span class="s0"># plt.xticks(rotation=45)</span>
+    <span class="s1">plt</span><span class="s3">.</span><span class="s1">show</span><span class="s3">()</span>
+
+<span class="s0">#%% md 
+</span><span class="s1">The dataset is clean, with no missing values and all features well-distributed. Most variables follow reasonable patterns that align with expectations for graduate school applicants 
+ 
+## Identify which features are most correlated with the target 
+</span><span class="s0">#%% 
+</span><span class="s1">plt</span><span class="s3">.</span><span class="s1">figure</span><span class="s3">(</span><span class="s1">figsize</span><span class="s3">=(</span><span class="s5">10</span><span class="s3">, </span><span class="s5">6</span><span class="s3">))</span>
+<span class="s1">sns</span><span class="s3">.</span><span class="s1">heatmap</span><span class="s3">(</span><span class="s1">df</span><span class="s3">.</span><span class="s1">corr</span><span class="s3">(), </span><span class="s1">annot</span><span class="s3">=</span><span class="s2">True</span><span class="s3">, </span><span class="s1">cmap</span><span class="s3">=</span><span class="s4">'coolwarm'</span><span class="s3">)</span>
+<span class="s1">plt</span><span class="s3">.</span><span class="s1">title</span><span class="s3">(</span><span class="s4">&quot;Correlation Matrix&quot;</span><span class="s3">)</span>
+<span class="s1">plt</span><span class="s3">.</span><span class="s1">show</span><span class="s3">()</span>
+
+<span class="s0">#%% md 
+</span><span class="s1">The target variable `chance_of_admit` is most strongly correlated with `CGPA` (0.87), followed by `GRE Score` (0.80) and `TOEFL Score` (0.79). Other moderate contributors include `University Rating`, `SOP`, and `LOR`. Research experience has a weaker correlation (0.55) but is still a relevant feature. 
+ 
+High inter-feature correlations (like GRE-TOEFL-CGPA) suggest potential multicollinearity, which will be addressed in modeling via PCA 
+ 
+## Pairplot: pairwise relationships between features 
+</span><span class="s0">#%% 
+</span><span class="s1">sns</span><span class="s3">.</span><span class="s1">pairplot</span><span class="s3">(</span><span class="s1">df</span><span class="s3">[[</span><span class="s4">&quot;gre_score&quot;</span><span class="s3">, </span><span class="s4">&quot;toefl_score&quot;</span><span class="s3">, </span><span class="s4">&quot;cgpa&quot;</span><span class="s3">, </span><span class="s4">&quot;chance_of_admit&quot;</span><span class="s3">]]) </span><span class="s0"># only the features of continuous variables</span>
+<span class="s1">plt</span><span class="s3">.</span><span class="s1">suptitle</span><span class="s3">(</span><span class="s4">&quot;Scatter Matrix of Key Features&quot;</span><span class="s3">, </span><span class="s1">y</span><span class="s3">=</span><span class="s5">1.02</span><span class="s3">)</span>
+<span class="s1">plt</span><span class="s3">.</span><span class="s1">show</span><span class="s3">()</span>
+<span class="s0">#%% md 
+</span>
+
+<span class="s1">The pairwise scatterplots show strong linear relationships between academic features (GRE, TOEFL, CGPA) and the target variable `chance_of_admit`. Among these, `CGPA` has the most compact and linear association with admission probability, making it the most informative single predictor. However, high inter-feature correlation (GRE–TOEFL–CGPA) suggests potential multicollinearity, which should be addressed during modeling. 
+ 
+#  feature scaling 
+</span><span class="s0">#%% 
+</span><span class="s1">features_to_scale </span><span class="s3">= [</span><span class="s4">&quot;gre_score&quot;</span><span class="s3">, </span><span class="s4">&quot;toefl_score&quot;</span><span class="s3">, </span><span class="s4">&quot;university_rating&quot;</span><span class="s3">, </span><span class="s4">&quot;sop&quot;</span><span class="s3">, </span><span class="s4">&quot;lor&quot;</span><span class="s3">, </span><span class="s4">&quot;cgpa&quot;</span><span class="s3">, </span><span class="s4">&quot;research&quot;</span><span class="s3">]</span>
+
+<span class="s1">X </span><span class="s3">= </span><span class="s1">df</span><span class="s3">[</span><span class="s1">features_to_scale</span><span class="s3">]</span>
+<span class="s1">y </span><span class="s3">= </span><span class="s1">df</span><span class="s3">[</span><span class="s4">&quot;chance_of_admit&quot;</span><span class="s3">]</span>
+<span class="s1">scaler </span><span class="s3">= </span><span class="s1">StandardScaler</span><span class="s3">()</span>
+<span class="s1">X_scaled </span><span class="s3">= </span><span class="s1">scaler</span><span class="s3">.</span><span class="s1">fit_transform</span><span class="s3">(</span><span class="s1">X</span><span class="s3">)  </span><span class="s0"># Returns numpy array</span>
+
+<span class="s1">df_scaled </span><span class="s3">= </span><span class="s1">pd</span><span class="s3">.</span><span class="s1">DataFrame</span><span class="s3">(</span><span class="s1">X_scaled</span><span class="s3">, </span><span class="s1">columns</span><span class="s3">=</span><span class="s1">features_to_scale</span><span class="s3">)</span>
+<span class="s1">df_scaled</span><span class="s3">[</span><span class="s4">&quot;chance_of_admit&quot;</span><span class="s3">] = </span><span class="s1">y  </span><span class="s0"># Add back the unscaled target</span>
+<span class="s0">#%% 
+# check mean and std after scaling</span>
+<span class="s1">df_scaled</span><span class="s3">.</span><span class="s1">describe</span><span class="s3">() </span>
+<span class="s0">#%% 
+# save the scaled data</span>
+<span class="s1">df_scaled</span><span class="s3">.</span><span class="s1">to_csv</span><span class="s3">(</span><span class="s4">&quot;../data/admission_data_standardized.csv&quot;</span><span class="s3">, </span><span class="s1">index</span><span class="s3">=</span><span class="s2">False</span><span class="s3">)</span></pre>
+</body>
+</html>
